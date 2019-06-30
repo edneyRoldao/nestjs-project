@@ -37,3 +37,9 @@
 - About Exceptions
     - we can throw nestjs exception to manage some requests, it give us a frendly way to treat httpErrors
         - NotFoundException
+
+- TypeORM (working with database)
+    - documentation: http://typeorm.io
+    - npm i --save @nestjs/typeorm typeorm mysql
+    - useful link: https://medium.com/@shaibenshimol/nestjs-and-mysql-in-10-minutes-711e02ec1dab
+
