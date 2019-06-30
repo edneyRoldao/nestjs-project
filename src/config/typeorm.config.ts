@@ -5,6 +5,6 @@ export const datasource: any = {
     username: 'root',
     password: 'root',
     database: 'taskmanagement',
-    entities: [__dirname + '../**/*.entity.{js, ts}'],
+    entities: [__dirname + '/../**/*.entity.{js, ts}'],
     synchronize: true,
 };

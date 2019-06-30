@@ -1,38 +1,18 @@
+import { TaskRepository } from './task.repository';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Task, TaskStatus } from './task.model';
+import { TaskStatus } from './task-status.enum';
 import { CreateTaskDto } from './create-task.dto';
-import * as uuid from 'uuid/v1';
 import { TaskFilterDto } from './task-filter.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Task } from './task.entity';
 
 @Injectable()
 export class TasksService {
 
-    private tasks: Task[] = [];
+    constructor(@InjectRepository(TaskRepository) private repository: TaskRepository) { }
 
-    listTasks(): Task[] {
-        return this.tasks;
-    }
-
-    filterList(filter: TaskFilterDto): Task[] {
-        const { status, search } = filter;
-
-        let tasks = this.tasks.slice();
-
-        if (status) {
-            tasks = tasks.filter(task => task.status === status);
-        }
-
-        if (search) {
-            tasks = tasks.filter((task: Task) => {
-                return task.title.includes(search) || task.description.includes(search);
-            });
-        }
-
-        return tasks;
-    }
-
-    getTask(id: string) {
-        const task = this.tasks.find((t: Task) => id === t.id);
+    async getTask(id: number): Promise<Task> {
+        const task = await this.repository.findOne(id); // it is a promise
 
         if (!task) {
             throw new NotFoundException(`task with id ${id} not found`);
@@ -41,43 +21,19 @@ export class TasksService {
         return task;
     }
 
-    deleteTask(id: string): void {
-        const task = this.getTask(id);
-        this.tasks = this.tasks.filter((t: Task) => t.id !== task.id);
-    }
-
-    updateTaskStatus(id: string, status: TaskStatus): Task | null {
-        const task = this.getTask(id);
-        task.status = status;
-        return task;
-    }
-
-    createTask(taskDto: CreateTaskDto): Task {
+    async createTask(taskDto: CreateTaskDto): Promise<Task> {
         const { title, description } = taskDto;
 
-        const task: Task = {
-            id: uuid(),
-            title,
-            description,
-            status: TaskStatus.OPEN,
-        };
+        const task = new Task();
 
-        this.tasks.push(task);
+        task.title = title;
+        task.description = description;
+        task.TaskStatus = TaskStatus.OPEN;
 
-        return task;
-    }
-
-    createTask2(title: string, description: string): Task {
-        const task: Task = {
-            id: uuid(),
-            title,
-            description,
-            status: TaskStatus.OPEN,
-        };
-
-        this.tasks.push(task);
+        await task.save();
 
         return task;
     }
+
 
 }

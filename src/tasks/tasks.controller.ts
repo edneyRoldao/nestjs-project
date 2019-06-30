@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Body, Param, Delete, Patch, Query, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Patch, Query, UsePipes, ValidationPipe, ParseIntPipe } from '@nestjs/common';
 import { TasksService } from './tasks.service';
-import { Task, TaskStatus } from './task.model';
+import { TaskStatus } from './task-status.enum';
+import { Task } from './task.entity';
 import { CreateTaskDto } from './create-task.dto';
 import { TaskFilterDto } from './task-filter.dto';
 import { TaskStatusValidationPipe } from './task-status-validation.pipe';
@@ -10,47 +11,16 @@ export class TasksController {
 
     constructor(private tasksService: TasksService) { }
 
-    @Get()
-    list(): Task[] {
-        return this.tasksService.listTasks();
-    }
-
-    @Get()
-    filteredList(@Query(ValidationPipe) filter: TaskFilterDto): Task[] {
-        if (Object.keys(filter).length) {
-            return this.tasksService.filterList(filter);
-        }
-
-        return this.tasksService.listTasks();
-    }
-
     @Get('/:id')
-    getTask(@Param('id') id: string) {
+    getTask(@Param('id', ParseIntPipe) id: number): Promise<Task> {
         return this.tasksService.getTask(id);
     }
 
-    @Delete('/:id')
-    deleteTask(@Param('id') id: string): void {
-        this.tasksService.deleteTask(id);
-    }
-
-    // we can get a whole body from request
     @Post()
     @UsePipes(ValidationPipe)
-    createTask(@Body() taskDto: CreateTaskDto) {
+    createTask(@Body() taskDto: CreateTaskDto): Promise<Task> {
         return this.tasksService.createTask(taskDto);
     }
 
-    @Post('/v2')
-    createTask2(@Body('title') title,
-                @Body('description') description) {
-        return this.tasksService.createTask2(title, description);
-    }
-
-    @Patch('/:id/status')
-    updateTaskStatus(@Param('id') id: string,
-                     @Body('status', TaskStatusValidationPipe) status: TaskStatus): Task {
-        return this.tasksService.updateTaskStatus(id, status);
-    }
 
 }
