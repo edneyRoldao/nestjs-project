@@ -26,3 +26,14 @@
 - Install class validator and class transformer <br>
     - npm i class-validator class-transformer --save
     - https://github.com/typestack/class-validator
+    - class-validator provide us a bunch of decorators that will be used by nestjs built-in pipes
+      to validate our resources.
+
+- About Pipes
+    - We use pipes to validate our DTOs 
+    - nestjs built-in pipes provide us httpErrorHandlers
+    - class-validator and pipes workes together.
+
+- About Exceptions
+    - we can throw nestjs exception to manage some requests, it give us a frendly way to treat httpErrors
+        - NotFoundException
